@@ -91,10 +91,20 @@ else:
     segmentation_model = None
     st.sidebar.warning("⚠️ Segmentation model not found")
 
-st.sidebar.subheader("📁 Upload Image")
-uploaded_file = st.sidebar.file_uploader(
-    "Choose an image...", type=["jpg", "png", "jpeg"]
+st.sidebar.subheader("📁 Upload Images")
+uploaded_files = st.sidebar.file_uploader(
+    "Choose images (max 100)...", 
+    type=["jpg", "png", "jpeg"],
+    accept_multiple_files=True
 )
+
+# Limit to 100 images
+if uploaded_files and len(uploaded_files) > 100:
+    st.sidebar.warning("⚠️ Maximum 100 images allowed. Only first 100 will be processed.")
+    uploaded_files = uploaded_files[:100]
+
+if uploaded_files:
+    st.sidebar.info(f"📊 {len(uploaded_files)} image(s) selected")
 
 
 px_to_cm_ratio = 0.1
@@ -136,97 +146,185 @@ def apply_canny_edge_detection(image_np):
 
 
 def detect_with_yolo(image_np):
+    """
+    Detect defects using YOLO model.
+    Returns: (annotated_image, defect_counts dict)
+    """
     if yolo_model is None:
         st.error("❌ YOLOv11 detection model not loaded!")
-        return image_np
+        return image_np, {}
     
     results = yolo_model(image_np)
-    for result in results:
-        boxes = result.boxes
-        for box in boxes:
-            x1, y1, x2, y2 = box.xyxy[0].cpu().numpy().astype(int)
-            width_px = x2 - x1
-            height_px = y2 - y1
-            width_cm = width_px * px_to_cm_ratio
-            height_cm = height_px * px_to_cm_ratio
+    result = results[0]
+    
+    # Count detections directly from class tensor
+    defect_counts = {}
+    
+    # Get number of detections using len()
+    num_boxes = len(result.boxes) if result.boxes is not None else 0
+    
+    if num_boxes > 0:
+        # Get all class IDs at once
+        cls_tensor = result.boxes.cls
+        for i in range(num_boxes):
+            cls_id = int(cls_tensor[i].item())
+            label = yolo_model.names[cls_id]
+            defect_counts[label] = defect_counts.get(label, 0) + 1
 
-            class_id = int(box.cls[0].cpu().numpy())
-            confidence = box.conf[0].cpu().numpy()
-            label = yolo_model.names[class_id]
-
-            # Draw the bounding box and label on the image
-            cv2.rectangle(image_np, (x1, y1), (x2, y2), (0, 255, 0), 2)
-            dimension_text = (
-                f"         {width_cm:.2f}cm x {height_cm:.2f}cm ({confidence:.2f})"
-            )
-            cv2.putText(
-                image_np,
-                dimension_text,
-                (x1, y1 - 10),
-                cv2.FONT_HERSHEY_SIMPLEX,
-                0.5,
-                (255, 0, 0),
-                2,
-            )
-
-    annotated_image = results[0].plot()
-    return annotated_image
+    annotated_image = result.plot()
+    return annotated_image, defect_counts
 
 
 def segment_image(image_np):
-
+    """
+    Segment image and return both the segmented image and defect counts.
+    Returns: (segmented_image, defect_counts dict)
+    """
     if segmentation_model is None:
         st.error("❌ Segmentation model not loaded!")
-        return image_np
+        return image_np, {}
     
     image_rgb = cv2.cvtColor(image_np, cv2.COLOR_BGR2RGB)
 
     results = segmentation_model.predict(source=image_rgb, conf=0.3, save=False)
+    result = results[0]
+    
+    # Count detections from segmentation model
+    defect_counts = {}
+    num_boxes = len(result.boxes) if result.boxes is not None else 0
+    
+    if num_boxes > 0:
+        cls_tensor = result.boxes.cls
+        for i in range(num_boxes):
+            cls_id = int(cls_tensor[i].item())
+            label = segmentation_model.names[cls_id]
+            defect_counts[label] = defect_counts.get(label, 0) + 1
 
-    segmented_image = results[0].plot()
+    segmented_image = result.plot()
 
-    return segmented_image
+    return segmented_image, defect_counts
 
 
-if uploaded_file is not None:
-    image = Image.open(uploaded_file)
-    image_np = np.array(image)
-    image_np = cv2.cvtColor(image_np, cv2.COLOR_RGB2BGR)
-
-    st.subheader("Uploaded Image")
-    st.image(image, caption="Uploaded Image", use_column_width=True)
-
-    with st.spinner("Analyzing the image..."):
-        time.sleep(2)
-
-        processed_image = detect_with_yolo(image_np)
+if uploaded_files:
+    total_images = len(uploaded_files)
+    
+    # Initialize total defect counts
+    total_defects = {}
+    
+    st.subheader(f"📸 Processing {total_images} Image(s)")
+    
+    # Progress tracking
+    progress_bar = st.progress(0)
+    status_text = st.empty()
+    defect_summary = st.empty()
+    
+    # Store all results
+    all_results = []
+    
+    for idx, uploaded_file in enumerate(uploaded_files):
+        # Update progress
+        progress = (idx + 1) / total_images
+        progress_bar.progress(progress)
+        status_text.markdown(f"**🔄 Processing:** {idx + 1} / {total_images} images | **Current:** {uploaded_file.name}")
+        
+        # Update running defect count
+        total_defect_count = sum(total_defects.values())
+        if total_defects:
+            defect_str = " | ".join([f"{k}: {v}" for k, v in total_defects.items()])
+            defect_summary.markdown(f"**🔍 Total Defects Found:** {total_defect_count} ({defect_str})")
+        
         image = Image.open(uploaded_file)
         image_np = np.array(image)
         image_np = cv2.cvtColor(image_np, cv2.COLOR_RGB2BGR)
-
-        segmented_image = segment_image(image_np)
-
-        image = Image.open(uploaded_file)
-        image_np = np.array(image)
-        image_np = cv2.cvtColor(image_np, cv2.COLOR_RGB2BGR)
-
-        equalized_image = preprocess_image_for_depth_estimation(image_np)
+        
+        # Detection (for visualization)
+        processed_image, detection_defects = detect_with_yolo(image_np.copy())
+        
+        # Segmentation (this is where cracks are actually detected!)
+        segmented_image, segmentation_defects = segment_image(image_np.copy())
+        
+        # Use segmentation defects as the primary source (it detects cracks better)
+        image_defects = segmentation_defects
+        
+        # Aggregate defect counts
+        for defect_type, count in image_defects.items():
+            if defect_type not in total_defects:
+                total_defects[defect_type] = 0
+            total_defects[defect_type] += count
+        
+        # Depth and edge detection
+        equalized_image = preprocess_image_for_depth_estimation(image_np.copy())
         depth_heatmap = create_depth_estimation_heatmap(equalized_image)
-        edges = apply_canny_edge_detection(image_np)
-
-    col1, col2 = st.columns(2)
-    with col1:
-        st.image(
-            processed_image,
-            caption="Crack Detection Results",
-            use_column_width=True,
-        )
-        st.image(
-            depth_heatmap, caption="Depth Estimation Heatmap", use_column_width=True
-        )
-    with col2:
-        st.image(segmented_image, caption="Segmentation Result", use_column_width=True)
-        st.image(edges, caption="Canny Edge Detection", use_column_width=True)
+        edges = apply_canny_edge_detection(image_np.copy())
+        
+        all_results.append({
+            "name": uploaded_file.name,
+            "original": image,
+            "processed": processed_image,
+            "segmented": segmented_image,
+            "depth": depth_heatmap,
+            "edges": edges,
+            "defects": image_defects
+        })
+    
+    # Final status update
+    status_text.markdown(f"**✅ Completed:** {total_images} / {total_images} images")
+    
+    # Final defect summary
+    total_defect_count = sum(total_defects.values())
+    st.markdown("---")
+    st.subheader("📊 Analysis Summary")
+    
+    # Create summary metrics
+    col_summary = st.columns(4)
+    with col_summary[0]:
+        st.metric("📷 Images Processed", total_images)
+    with col_summary[1]:
+        st.metric("🔍 Total Defects", total_defect_count)
+    with col_summary[2]:
+        # Count cracks (case-insensitive matching)
+        crack_count = sum(count for defect_type, count in total_defects.items() 
+                         if "crack" in defect_type.lower())
+        st.metric("🔴 Cracks", crack_count)
+    with col_summary[3]:
+        other_defects = total_defect_count - crack_count
+        st.metric("⚠️ Other Defects", other_defects)
+    
+    # Detailed breakdown
+    if total_defects:
+        st.markdown("**Defect Breakdown:**")
+        defect_cols = st.columns(len(total_defects) if len(total_defects) <= 5 else 5)
+        for i, (defect_type, count) in enumerate(total_defects.items()):
+            with defect_cols[i % len(defect_cols)]:
+                st.info(f"**{defect_type}:** {count}")
+    
+    st.markdown("---")
+    
+    # Display results for each image
+    for i, result in enumerate(all_results):
+        with st.expander(f"📷 Image {i+1}: {result['name']} ({sum(result['defects'].values())} defects)", expanded=(i == 0)):
+            st.image(result['original'], caption="Original Image", use_container_width=True)
+            
+            # Show defects found in this image
+            if result['defects']:
+                defect_str = ", ".join([f"{k}: {v}" for k, v in result['defects'].items()])
+                st.success(f"🔍 Defects found: {defect_str}")
+            else:
+                st.info("✅ No defects detected in this image")
+            
+            col1, col2 = st.columns(2)
+            with col1:
+                st.image(
+                    result['processed'],
+                    caption="Crack Detection Results",
+                    use_container_width=True,
+                )
+                st.image(
+                    result['depth'], caption="Depth Estimation Heatmap", use_container_width=True
+                )
+            with col2:
+                st.image(result['segmented'], caption="Segmentation Result", use_container_width=True)
+                st.image(result['edges'], caption="Canny Edge Detection", use_container_width=True)
 
 
 st.markdown(
