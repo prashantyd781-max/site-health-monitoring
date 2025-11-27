@@ -1,0 +1,58 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+ENV/
+env/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Model files (too large for GitHub)
+*.pt
+*.pth
+*.onnx
+*.pkl
+*.h5
+
+# Training outputs
+runs/
+training_output*.log
+spalling_training.log
+
+# Large datasets
+segmentation_model/crack_augmented/
+model_data/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Results/outputs (keep structure, ignore large files)
+detection_results/*.jpg
+detection_results/*.png
+evaluation_train/
+evaluation_val/
+test_results/*.jpg
+working_model_results/*.jpg
+segmentation_outputs/*.png
+segmented_portions/
+
+# Keep only essential model files (add specific ones you need)
+!best.pt
+!yolo11n.pt
+!yolo11n-seg.pt
+!yolov8n.pt
+!yolov8n-seg.pt
+!yolov8_crack_detection_WORKING.pt
+

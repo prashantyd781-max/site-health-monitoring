@@ -1,0 +1,233 @@
+/Users/prashant/.matplotlib is not a writable directory
+Matplotlib created a temporary cache directory at /var/folders/tp/x9v1h_596lq8jtxm23vcvpgr0000gn/T/matplotlib-s20wava6 because there was an issue with the default path (/Users/prashant/.matplotlib); it is highly recommended to set the MPLCONFIGDIR environment variable to a writable directory, in particular to speed up the import of Matplotlib and to better support multiprocessing.
+Matplotlib is building the font cache; this may take a moment.
+🚀 YOLOv8 TRAINING IMPROVEMENTS ANALYSIS
+================================================================================
+Analyzing crack_augmented and spalling_rebar datasets
+
+❌ Results not found: runs/segment/yolov8_crack_augmented/results.csv
+❌ Results not found: runs/segment/yolov8_crack_augmented2/results.csv
+❌ Results not found: runs/segment/yolov8_spalling_rebar_final/results.csv
+
+================================================================================
+📊 ANALYSIS: Spalling & Rebar (Final 2)
+================================================================================
+Training Path: runs/segment/yolov8_spalling_rebar_final2/results.csv
+Total Epochs: 11
+
+Model Type: YOLOv8 Segmentation
+
+📉 LOSS IMPROVEMENTS:
+--------------------------------------------------------------------------------
+📊 Box Loss:
+   Initial:     1.610000
+   Final:       1.360520
+   Best:        1.360520
+   Reduction:   15.50%
+
+📊 Classification Loss:
+   Initial:     2.306690
+   Final:       1.584530
+   Best:        1.584530
+   Reduction:   31.31%
+
+📊 DFL Loss:
+   Initial:     1.544070
+   Final:       1.394020
+   Best:        1.394020
+   Reduction:   9.72%
+
+📊 Segmentation Loss:
+   Initial:     3.187760
+   Final:       2.411450
+   Best:        2.411450
+   Reduction:   24.35%
+
+📊 TOTAL LOSS:
+   Initial:     8.648520
+   Final:       6.750520
+   Reduction:   21.95%
+
+
+🎯 PERFORMANCE METRICS IMPROVEMENTS:
+--------------------------------------------------------------------------------
+📊 Precision:
+   Initial:     0.2645
+   Final:       0.4899
+   Best:        0.5413 (Epoch 7)
+   Improvement: +85.21%
+
+📊 Recall:
+   Initial:     0.1473
+   Final:       0.1507
+   Best:        0.2703 (Epoch 6)
+   Improvement: +2.29%
+
+📊 mAP@0.5:
+   Initial:     0.1209
+   Final:       0.1478
+   Best:        0.2534 (Epoch 6)
+   Improvement: +22.31%
+
+📊 mAP@0.5:0.95:
+   Initial:     0.0470
+   Final:       0.0845
+   Best:        0.1309 (Epoch 7)
+   Improvement: +79.94%
+
+📊 F1 Score:
+   Initial:     0.1892
+   Final:       0.2305
+   Best:        0.3538 (Epoch 6)
+   Improvement: +21.80%
+
+
+🎯 F1-CONFIDENCE CORRELATION:
+--------------------------------------------------------------------------------
+Correlation: 0.9944
+✅ Strong positive correlation - Model is well-balanced
+
+📊 Best F1 Score Point (Epoch 6):
+   F1 Score:    0.3538
+   Precision:   0.5120
+   Recall:      0.2703
+   mAP@0.5:     0.2534
+
+📊 Best Confidence Point (Epoch 6):
+   mAP@0.5:     0.2534
+   F1 Score:    0.3538
+   Precision:   0.5120
+   Recall:      0.2703
+
+📈 EPOCH-BY-EPOCH PROGRESSION (Every 10 epochs):
+--------------------------------------------------------------------------------
+Epoch    Box Loss     Cls Loss     Precision    Recall       F1         mAP@0.5   
+--------------------------------------------------------------------------------
+1        1.610000     2.306690     0.2645       0.1473       0.1892     0.1209    
+2        1.555230     2.020010     0.4009       0.2084       0.2743     0.1865    
+3        1.553500     1.924660     0.4942       0.2677       0.3473     0.2516    
+4        1.536080     1.884550     0.5003       0.1744       0.2587     0.1783    
+5        1.493030     1.816570     0.3272       0.1244       0.1802     0.0974    
+6        1.450980     1.768160     0.5120       0.2703       0.3538     0.2534    
+7        1.434840     1.708570     0.5413       0.2535       0.3453     0.2511    
+8        1.405550     1.675710     0.3145       0.1204       0.1741     0.1146    
+9        1.386880     1.644050     0.4046       0.1522       0.2212     0.1507    
+10       1.364230     1.595860     0.4684       0.1389       0.2143     0.1338    
+11       1.360520     1.584530     0.4899       0.1507       0.2305     0.1478    
+11       1.360520     1.584530     0.4899       0.1507       0.2305     0.1478    
+
+🏆 FINAL ASSESSMENT:
+--------------------------------------------------------------------------------
+Overall Rating: 🔶 NEEDS IMPROVEMENT - More Training Required
+Final F1 Score: 0.2305
+Final mAP@0.5:  0.1478
+
+================================================================================
+📊 ANALYSIS: Spalling & Rebar (Final 3)
+================================================================================
+Training Path: runs/segment/yolov8_spalling_rebar_final3/results.csv
+Total Epochs: 7
+
+Model Type: YOLOv8 Segmentation
+
+📉 LOSS IMPROVEMENTS:
+--------------------------------------------------------------------------------
+📊 Box Loss:
+   Initial:     1.654920
+   Final:       1.459970
+   Best:        1.459970
+   Reduction:   11.78%
+
+📊 Classification Loss:
+   Initial:     2.388830
+   Final:       1.791210
+   Best:        1.791210
+   Reduction:   25.02%
+
+📊 DFL Loss:
+   Initial:     1.608290
+   Final:       1.484160
+   Best:        1.484160
+   Reduction:   7.72%
+
+📊 Segmentation Loss:
+   Initial:     3.324720
+   Final:       2.636430
+   Best:        2.636430
+   Reduction:   20.70%
+
+📊 TOTAL LOSS:
+   Initial:     8.976760
+   Final:       7.371770
+   Reduction:   17.88%
+
+
+🎯 PERFORMANCE METRICS IMPROVEMENTS:
+--------------------------------------------------------------------------------
+📊 Precision:
+   Initial:     0.4242
+   Final:       0.4604
+   Best:        0.5232 (Epoch 3)
+   Improvement: +8.54%
+
+📊 Recall:
+   Initial:     0.3962
+   Final:       0.1013
+   Best:        0.3962 (Epoch 1)
+   Improvement: -74.43%
+
+📊 mAP@0.5:
+   Initial:     0.3225
+   Final:       0.1066
+   Best:        0.3416 (Epoch 2)
+   Improvement: -66.93%
+
+📊 mAP@0.5:0.95:
+   Initial:     0.1227
+   Final:       0.0600
+   Best:        0.1655 (Epoch 3)
+   Improvement: -51.10%
+
+📊 F1 Score:
+   Initial:     0.4097
+   Final:       0.1661
+   Best:        0.4097 (Epoch 1)
+   Improvement: -59.46%
+
+
+🎯 F1-CONFIDENCE CORRELATION:
+--------------------------------------------------------------------------------
+Correlation: 0.9893
+✅ Strong positive correlation - Model is well-balanced
+
+📊 Best F1 Score Point (Epoch 1):
+   F1 Score:    0.4097
+   Precision:   0.4242
+   Recall:      0.3962
+   mAP@0.5:     0.3225
+
+📊 Best Confidence Point (Epoch 2):
+   mAP@0.5:     0.3416
+   F1 Score:    0.4006
+   Precision:   0.4617
+   Recall:      0.3538
+
+📈 EPOCH-BY-EPOCH PROGRESSION (Every 10 epochs):
+--------------------------------------------------------------------------------
+Epoch    Box Loss     Cls Loss     Precision    Recall       F1         mAP@0.5   
+--------------------------------------------------------------------------------
+1        1.654920     2.388830     0.4242       0.3962       0.4097     0.3225    
+2        1.602240     2.100980     0.4617       0.3538       0.4006     0.3416    
+3        1.597610     2.036530     0.5232       0.3233       0.3996     0.3085    
+4        1.550810     1.963820     0.4737       0.2815       0.3532     0.2540    
+5        1.529920     1.892270     0.4493       0.1733       0.2501     0.1616    
+6        1.498240     1.836640     0.4487       0.1055       0.1708     0.1079    
+7        1.459970     1.791210     0.4604       0.1013       0.1661     0.1066    
+Traceback (most recent call last):
+  File "/Users/prashant/Documents/coding/demo/analyze_yolov8_improvements.py", line 377, in <module>
+    main()
+  File "/Users/prashant/Documents/coding/demo/analyze_yolov8_improvements.py", line 359, in main
+    result = analyze_single_training(path, dataset_name)
+  File "/Users/prashant/Documents/coding/demo/analyze_yolov8_improvements.py", line 191, in analyze_single_training
+    if len(df) % (len(df)//10) != 1:
+ZeroDivisionError: integer division or modulo by zero

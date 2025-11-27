@@ -1,0 +1,13 @@
+train: ../train/images
+val: ../valid/images
+test: ../test/images
+
+nc: 2
+names: ['exposed_rebar', 'spalling']
+
+roboflow:
+  workspace: labelling-9tvkx
+  project: spalling-and-exposed-rebar-ttsjj
+  version: 1
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/labelling-9tvkx/spalling-and-exposed-rebar-ttsjj/dataset/1
